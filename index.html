@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Meristem — code that lives in a graph</title>
+  <meta name="description" content="Meristem replaces directories and Git with a living code repository: objects in a graph, history change by change, a disposable notebook.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560&family=IBM+Plex+Mono:wght@400;500&family=Outfit:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect fill='%2312170f' width='32' height='32'/%3E%3Ccircle cx='16' cy='18' r='4' fill='%23d7ef6a'/%3E%3Ccircle cx='10' cy='11' r='2.2' fill='%238fb84a'/%3E%3Ccircle cx='22' cy='10' r='2.2' fill='%23e4a888'/%3E%3C/svg%3E">
+</head>
+<body>
+  <header class="wrap top">
+    <a class="mark" href="#top">
+      <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
+        <circle cx="11" cy="13" r="3.2" fill="#d7ef6a"/>
+        <circle cx="6.5" cy="7.5" r="2" fill="#8fb84a"/>
+        <circle cx="15.5" cy="6.5" r="2" fill="#e4a888"/>
+        <path d="M11 13 L6.5 7.5 M11 13 L15.5 6.5" stroke="#f3ecdc" stroke-width="1" fill="none"/>
+      </svg>
+      meristem
+    </a>
+    <nav>
+      <a href="#problem">the problem</a>
+      <a href="#cycle">the cycle</a>
+      <a href="#cli">the interface</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="wrap hero">
+      <div>
+        <p class="kicker">a living code repository</p>
+        <h1>The file stops being the unit.</h1>
+        <p class="lead">Every function, type, and constant is an object in a graph. History stores the change, not the snapshot. A branch is a notebook that exists only for the task.</p>
+      </div>
+      <figure class="growth">
+        <svg viewBox="0 0 380 460" role="img" aria-label="A stem of objects: a function, a type, and a call budding from the same node.">
+          <path d="M190 430 C190 300 190 240 190 150" stroke="#f3ecdc" stroke-opacity="0.35" fill="none" stroke-width="1.4"/>
+          <path d="M190 250 C140 230 100 200 78 150" stroke="#f3ecdc" stroke-opacity="0.35" fill="none"/>
+          <path d="M190 210 C240 190 280 160 304 112" stroke="#f3ecdc" stroke-opacity="0.35" fill="none"/>
+          <path d="M190 168 C230 150 250 130 268 92" stroke="#d7ef6a" fill="none" stroke-width="1.4"/>
+          <g fill="#1c2416" stroke="#f3ecdc" stroke-opacity="0.4">
+            <circle cx="190" cy="400" r="28"/>
+            <circle cx="190" cy="250" r="22"/>
+            <circle cx="78" cy="140" r="26"/>
+            <circle cx="304" cy="100" r="24"/>
+          </g>
+          <g class="node-pulse">
+            <circle cx="250" cy="168" r="18" fill="#d7ef6a"/>
+          </g>
+          <g fill="#f3ecdc" font-family="IBM Plex Mono, ui-monospace, monospace" font-size="11">
+            <text x="190" y="404" text-anchor="middle">head</text>
+            <text x="190" y="254" text-anchor="middle">flow</text>
+            <text x="78" y="144" text-anchor="middle">type</text>
+            <text x="304" y="104" text-anchor="middle">func</text>
+          </g>
+          <text x="250" y="172" text-anchor="middle" fill="#161910" font-family="IBM Plex Mono, ui-monospace, monospace" font-size="11">call</text>
+        </svg>
+      </figure>
+    </section>
+
+    <section class="paper" id="problem">
+      <div class="wrap">
+        <p class="section-label">01 — what does not work</p>
+        <h2>Three habits an AI inherits and should not.</h2>
+        <ol class="problems">
+          <li>
+            <strong>The whole file.</strong>
+            <span>To change one function, the context loads the rest of the file. In Meristem the object is the addressable piece.</span>
+          </li>
+          <li>
+            <strong>The snapshot.</strong>
+            <span>Git stores the state. The event log stores what changed, when, and from which base. Any point can be read again.</span>
+          </li>
+          <li>
+            <strong>The branch that stays.</strong>
+            <span>Here the branch is a change-set. Dropping the task leaves nothing behind. Only promotion enters the head.</span>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="wrap cycle" id="cycle">
+      <p class="section-label">02 — how a change lives</p>
+      <h2>Four steps, and only the last one persists.</h2>
+      <div class="rail" role="tablist" aria-label="The life of a change">
+        <button type="button" role="tab" id="tab-object" aria-selected="true" aria-controls="panel" data-step="object"><small>01</small><strong>object</strong></button>
+        <button type="button" role="tab" id="tab-changeset" aria-selected="false" aria-controls="panel" data-step="changeset"><small>02</small><strong>change-set</strong></button>
+        <button type="button" role="tab" id="tab-runner" aria-selected="false" aria-controls="panel" data-step="runner"><small>03</small><strong>runner</strong></button>
+        <button type="button" role="tab" id="tab-promote" aria-selected="false" aria-controls="panel" data-step="promote"><small>04</small><strong>promote</strong></button>
+      </div>
+      <div class="stage" id="panel" role="tabpanel" aria-labelledby="tab-object">
+        <p id="stage-copy">A function, a type, a constant. Its own address in the graph, readable without opening the neighbor.</p>
+        <pre class="snippet" id="stage-code">id: site/index.html
+kind: snippet
+language: html</pre>
+      </div>
+    </section>
+
+    <section class="wrap cli" id="cli">
+      <div class="cli-grid">
+        <div>
+          <p class="section-label">03 — the first interface</p>
+          <h2>The command comes up. The repository does the rest.</h2>
+          <p class="lead">The CLI is the client. It starts the seed images and asks the deploy flow to bring up runners, the gateway, and whatever else lives in the graph. Finer management, on the web, comes next. The page you are reading is an object too.</p>
+        </div>
+        <pre class="command"><span class="dim">$</span> meristem up
+<span class="ok">repository   8080  healthy</span>
+<span class="ok">builder      8096  healthy</span>
+<span class="ok">gateway      8095  healthy</span>
+<span class="dim">$</span> meristem stats</pre>
+      </div>
+    </section>
+
+    <section class="paper" id="vocabulary">
+      <div class="wrap">
+        <p class="section-label">04 — vocabulary</p>
+        <h2>Few words, used the same way every time.</h2>
+        <dl class="vocab">
+          <div><dt>object</dt><dd>The smallest unit of code. Not a file.</dd></div>
+          <div><dt>flow</dt><dd>A view assembled on demand over the graph.</dd></div>
+          <div><dt>change-set</dt><dd>The notebook for a task. Disposable.</dd></div>
+          <div><dt>head</dt><dd>What the runners execute right now.</dd></div>
+        </dl>
+      </div>
+    </section>
+  </main>
+
+  <footer class="wrap foot">
+    <span>flow apresentacao</span>
+    <span>site/index.html · site/styles.css</span>
+  </footer>
+
+  <script>
+    const steps = {
+      object: {
+        copy: "A function, a type, a constant. Its own address in the graph, readable without opening the neighbor.",
+        code: "id: site/index.html\nkind: snippet\nlanguage: html"
+      },
+      changeset: {
+        copy: "The task opens a change-set. Stage proposes. None of that is the head yet. Closing without promoting forgets it.",
+        code: "POST /changesets/cs-presentation/objects\nop: upsert\nobject: site/index.html"
+      },
+      runner: {
+        copy: "Before it persists, the task is tested in a container. The host does not run the flow's code.",
+        code: "change-set overlay\nisolated runner\nonly then promote"
+      },
+      promote: {
+        copy: "Promote writes the change to the event log and moves the head forward. The past stays there, sequence by sequence.",
+        code: "POST /changesets/cs-presentation/promote\nhead → next seq"
+      }
+    };
+    const tabs = document.querySelectorAll(".rail button");
+    const copy = document.getElementById("stage-copy");
+    const code = document.getElementById("stage-code");
+    const panel = document.getElementById("panel");
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const step = steps[tab.dataset.step];
+        tabs.forEach((item) => item.setAttribute("aria-selected", item === tab ? "true" : "false"));
+        copy.textContent = step.copy;
+        code.textContent = step.code;
+        panel.setAttribute("aria-labelledby", tab.id);
+      });
+    });
+  </script>
+</body>
+</html>
